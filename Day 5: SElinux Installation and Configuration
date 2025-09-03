@@ -1,0 +1,86 @@
+# **Task: Install and Disable SELinux (Temporarily) on App Server 3**
+
+## **Purpose**
+Following a security directive, the **xFusionCorp Industries** security team required the installation of **SELinux packages** across servers.  
+For now, SELinux must be **installed but kept disabled** until further configuration is completed.  
+
+⚡ **Note:** No immediate reboot is required, since a scheduled maintenance reboot is already planned tonight. After that reboot, SELinux should remain **disabled**.
+
+---
+
+## **What is SELinux?**
+**Security-Enhanced Linux (SELinux)** is a kernel security module that provides **Mandatory Access Control (MAC)**.  
+It enforces strict access control policies beyond standard Linux permissions.
+
+**Modes of SELinux:**
+1. **Enforcing** – Blocks and logs violations.  
+2. **Permissive** – Only logs violations, does not block.  
+3. **Disabled** – SELinux is completely turned off.  
+
+For this task → Required mode is **Disabled**.
+
+---
+
+## **Step-by-Step Instructions**
+
+### 1. SSH into App Server 3:
+```bash
+ssh banner@stapp03
+2. Switch to root:
+sudo -i
+
+3. Install SELinux packages:
+yum install -y selinux-policy selinux-policy-targeted policycoreutils
+
+4. Edit SELinux configuration file:
+vi /etc/selinux/config
+
+
+Change:
+
+SELINUX=enforcing
+
+
+To:
+
+SELINUX=disabled
+
+
+Save and exit (:wq in vi).
+
+5. Verify the configuration change:
+grep SELINUX= /etc/selinux/config
+
+
+Expected output:
+
+SELINUX=disabled
+
+6. Exit the server:
+exit
+
+Important Notes
+
+🚫 Do not reboot manually → A scheduled reboot will apply the changes tonight.
+
+🔄 Current status (sestatus) may still show enforcing/permissive until reboot.
+
+✅ After reboot, SELinux will be disabled permanently.
+
+End Goal
+
+After the scheduled reboot, the command:
+
+sestatus
+
+
+Should return:
+
+SELinux status:                 disabled
+
+Command	Purpose
+yum install -y selinux-policy selinux-policy-targeted policycoreutils	Install SELinux packages.
+vi /etc/selinux/config	Open SELinux config file for editing.
+SELINUX=disabled	Ensure SELinux is permanently disabled after reboot.
+grep SELINUX= /etc/selinux/config	Confirm configuration file changes.
+sestatus	Verify SELinux status (final check after reboot).
