@@ -1,0 +1,100 @@
+# Day 12 – 🌐 Deploy Java Application on Tomcat
+
+**Objective:**  
+Deploy the Nautilus Java-based application (ROOT.war) on **Apache Tomcat** on App Server 1 and configure it to run on **port 8086**.
+
+---
+
+## 📝 Question
+The Nautilus application development team finished the beta version of a Java app. The tasks:
+
+1. Install **Tomcat server** on App Server 1  
+2. Configure it to run on **port 8086**  
+3. Deploy `ROOT.war` from jump host `/tmp`  
+4. Ensure the app is accessible on the **base URL**:  
+```text
+curl http://stapp01:8086
+````
+
+---
+
+## 💡 Answer / Steps Performed
+
+### 1️⃣ SSH into App Server 1
+
+```bash
+ssh tony@stapp01
+```
+
+### 2️⃣ Install Tomcat
+
+```bash
+sudo yum install -y tomcat tomcat-webapps tomcat-admin-webapps
+```
+
+### 3️⃣ Configure Tomcat to run on port 8086
+
+Edit server configuration:
+
+```bash
+sudo vi /etc/tomcat/server.xml
+```
+
+Find:
+
+```xml
+<Connector port="8080" protocol="HTTP/1.1">
+```
+
+Change to:
+
+```xml
+<Connector port="8086" protocol="HTTP/1.1">
+```
+
+### 4️⃣ Start & enable Tomcat
+
+```bash
+sudo systemctl start tomcat
+sudo systemctl enable tomcat
+```
+
+### 5️⃣ Deploy ROOT.war
+
+1. Copy WAR file from jump host:
+
+```bash
+scp /tmp/ROOT.war tony@stapp01:/tmp/
+```
+
+2. Move it to Tomcat webapps directory:
+
+```bash
+sudo mv /tmp/ROOT.war /usr/share/tomcat/webapps/
+```
+
+### 6️⃣ Verify Deployment
+
+```bash
+curl http://stapp01:8086
+```
+
+* The web page should display correctly ✅
+
+---
+
+## ✅ Outcome
+
+* Tomcat installed and running on **port 8086**
+* `ROOT.war` deployed successfully
+* Application accessible on base URL without errors 🎯
+
+---
+
+## 💡 Key Learning
+
+* Proper port configuration ensures apps run on the desired endpoints 🌐
+* Deploying WAR files in Tomcat requires correct directory and permissions ⚙️
+* Always verify deployment using `curl` or a browser before considering the task complete.
+
+
