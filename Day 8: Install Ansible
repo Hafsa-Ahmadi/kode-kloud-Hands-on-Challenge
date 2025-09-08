@@ -1,22 +1,112 @@
-⚙️ Day 8 – Install Ansible
-
-Question:
-Install Ansible v4.7.0 on jump host and configure it to manage app servers.
-
-Answer:
-
-Installed Ansible using pip:
-
-pip3 install ansible==4.7.0
 
 
-Verified version:
+# 🚀 Nautilus DevOps: Ansible Setup on Jump Host
 
+![Ansible](https://img.shields.io/badge/Ansible-4.7.0-blue?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.11-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
+
+![Automation GIF](https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif)
+
+---
+
+## 🎯 Objective
+
+The **Nautilus DevOps team** decided to adopt **Ansible** for automation and configuration management due to its simplicity and minimal prerequisites.  
+
+The **Jump Host** acts as the Ansible controller to test automation tasks across multiple servers.
+
+---
+
+## 🛠️ Installation Steps
+
+### 1️⃣ Install Python3 & pip3
+
+**Ubuntu/Debian**
+```bash
+sudo apt-get update
+sudo apt-get install python3-pip -y
+````
+
+**CentOS/RHEL**
+
+```bash
+sudo yum install python3-pip -y
+```
+
+> ⚡ Python3 and pip3 are required for Ansible installation.
+
+---
+
+### 2️⃣ Install Ansible v4.7.0 Globally
+
+```bash
+sudo pip3 install ansible==4.7.0
+```
+
+> 💡 `sudo` ensures the installation is **system-wide**, making Ansible available for all users.
+
+---
+
+### 3️⃣ Verify Installation
+
+```bash
 ansible --version
+```
+
+✅ Expected output: `ansible 4.7.0`
+
+---
+
+### 4️⃣ Ensure Global Access
+
+Check if `/usr/local/bin` is in PATH:
+
+```bash
+echo $PATH
+```
+
+If missing:
+
+```bash
+echo 'export PATH=$PATH:/usr/local/bin' | sudo tee -a /etc/profile
+source /etc/profile
+```
+
+> 🌟 Now all users can run Ansible commands seamlessly.
+
+---
+
+## 🖼️ Workflow Diagram
+
+![Ansible Workflow](https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif)
+
+> This diagram illustrates the Jump Host controlling server automation using Ansible.
+
+---
+
+## ✅ Conclusion
+
+The Jump Host is now a fully configured **Ansible controller**, ready to:
+
+* Run automation playbooks
+* Manage server configurations efficiently
+* Accelerate infrastructure as code (IaC) adoption
+
+---
+
+## 🌟 Highlights
+
+* System-wide Ansible v4.7.0 installation
+* Minimal prerequisites required
+* Jump Host setup as central controller
+* Ready for playbooks and automation testing
+
+---
+
+## 🔖 Tags
+
+`#Ansible` `#DevOps` `#Automation` `#ConfigurationManagement` `#IaC` `#Teamwork` `#InfrastructureAsCode`
 
 
-Configured /etc/ansible/hosts with app servers.
 
-Tested connectivity:
-
-ansible all -m ping
