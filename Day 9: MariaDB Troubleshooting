@@ -1,0 +1,79 @@
+# Day 09 – Fix MariaDB Service
+
+**Objective:**  
+Resolve the critical issue where the Nautilus application in Stratos DC was unable to connect to the database due to MariaDB service being down.
+
+---
+
+## Steps Performed
+
+### 1. Login to Database Server
+```bash
+ssh <user>@dbserver1
+````
+
+### 2. Check MariaDB Service Status
+
+```bash
+sudo systemctl status mariadb
+```
+
+* Confirmed the service was inactive or failed.
+
+### 3. Start MariaDB Service
+
+```bash
+sudo systemctl start mariadb
+```
+
+### 4. Enable MariaDB to Start on Boot
+
+```bash
+sudo systemctl enable mariadb
+```
+
+### 5. Verify Service
+
+```bash
+sudo systemctl status mariadb
+# OR
+mysqladmin -u root -p status
+```
+
+* Confirmed the service is **active and running**.
+
+### 6. Troubleshooting (if service fails)
+
+```bash
+sudo journalctl -xe | grep mariadb
+sudo tail -n 50 /var/log/mariadb/mariadb.log
+```
+
+* Checked logs for errors like **permission issues, missing files, or stale sockets** and resolved them as needed.
+
+### 7. Test Application Connectivity
+
+```bash
+mysql -u <appuser> -p -h localhost -e "SHOW DATABASES;"
+```
+
+* Verified Nautilus app can connect to the database successfully.
+* Optionally restarted the application server to refresh connections:
+
+```bash
+sudo systemctl restart tomcat
+```
+
+---
+
+## Outcome
+
+* MariaDB service restored successfully.
+* Nautilus application can now connect to the database without issues.
+
+---
+
+**Key Learning:**
+Always check **service status, logs, and application connectivity** during production incidents. Quick verification ensures minimal downtime.
+
+```
