@@ -1,38 +1,44 @@
-# Day 09 – Fix MariaDB Service
+### **Day-09-Fix-MariaDB-Service/README.md**
+
+# Day 09 – 🔧 Fix MariaDB Service
 
 **Objective:**  
-Resolve the critical issue where the Nautilus application in Stratos DC was unable to connect to the database due to MariaDB service being down.
+Resolve the critical issue where the **Nautilus application** in Stratos DC was unable to connect to the database because the **MariaDB service was down**.
 
 ---
 
-## Steps Performed
+## 🛠 Steps Performed
 
-### 1. Login to Database Server
+### 1️⃣ Login to Database Server
 ```bash
 ssh <user>@dbserver1
 ````
 
-### 2. Check MariaDB Service Status
+### 2️⃣ Check MariaDB Service Status
 
 ```bash
 sudo systemctl status mariadb
 ```
 
-* Confirmed the service was inactive or failed.
+* Confirmed the service was **inactive ❌ or failed ❌**.
 
-### 3. Start MariaDB Service
+### 3️⃣ Start MariaDB Service
 
 ```bash
 sudo systemctl start mariadb
 ```
 
-### 4. Enable MariaDB to Start on Boot
+* Service started successfully ✅
+
+### 4️⃣ Enable MariaDB to Start on Boot
 
 ```bash
 sudo systemctl enable mariadb
 ```
 
-### 5. Verify Service
+* Ensures MariaDB automatically starts after a reboot 🔄
+
+### 5️⃣ Verify Service
 
 ```bash
 sudo systemctl status mariadb
@@ -40,25 +46,26 @@ sudo systemctl status mariadb
 mysqladmin -u root -p status
 ```
 
-* Confirmed the service is **active and running**.
+* Confirmed the service is **active and running ✅**
 
-### 6. Troubleshooting (if service fails)
+### 6️⃣ Troubleshooting (if needed)
 
 ```bash
 sudo journalctl -xe | grep mariadb
 sudo tail -n 50 /var/log/mariadb/mariadb.log
 ```
 
-* Checked logs for errors like **permission issues, missing files, or stale sockets** and resolved them as needed.
+* Checked logs for errors like **permission issues, missing files, or stale socket files**
+* Resolved issues as required 📝
 
-### 7. Test Application Connectivity
+### 7️⃣ Test Application Connectivity
 
 ```bash
 mysql -u <appuser> -p -h localhost -e "SHOW DATABASES;"
 ```
 
-* Verified Nautilus app can connect to the database successfully.
-* Optionally restarted the application server to refresh connections:
+* Verified Nautilus app can connect to the database successfully 🌐
+* Optional: Restarted app server to refresh connections:
 
 ```bash
 sudo systemctl restart tomcat
@@ -66,14 +73,15 @@ sudo systemctl restart tomcat
 
 ---
 
-## Outcome
+## ✅ Outcome
 
-* MariaDB service restored successfully.
-* Nautilus application can now connect to the database without issues.
+* MariaDB service restored successfully 💪
+* Nautilus application now connects to the database without errors 🎯
 
 ---
 
-**Key Learning:**
-Always check **service status, logs, and application connectivity** during production incidents. Quick verification ensures minimal downtime.
+## 💡 Key Learning
 
-```
+* During production incidents, **always check service status, logs, and app connectivity**.
+* Quick verification ensures **minimal downtime ⏱️** and smooth operations.
+
