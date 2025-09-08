@@ -1,0 +1,49 @@
+Day-11-Linux-Bash-Scripts/README.md
+# Day 11 – 🐚 Linux Bash Scripts
+
+**Objective:**  
+Write a bash script to automate system tasks and validate file existence.
+
+---
+
+## 📝 Question
+Write a bash script to check for the existence of a file (e.g., `/etc/passwd`) and output a message accordingly.
+
+---
+
+## 💡 Answer / Steps Performed
+
+### 1️⃣ Create the script
+Created a script `task.sh`:
+```bash
+#!/bin/bash
+
+if [ -f /etc/passwd ]; then
+    echo "File exists ✅"
+else
+    echo "File missing ❌"
+fi
+
+2️⃣ Make the script executable
+chmod +x task.sh
+
+3️⃣ Run the script
+./task.sh
+
+4️⃣ Expected Output
+File exists ✅
+
+
+Confirms /etc/passwd exists on the system.
+
+✅ Outcome
+
+Bash script successfully automated a validation check
+
+Learned basic file testing in Linux and script execution permissions
+
+💡 Key Learning
+
+Bash scripting can automate repetitive tasks efficiently ⚡
+
+Always check permissions before executing scripts 🔑
