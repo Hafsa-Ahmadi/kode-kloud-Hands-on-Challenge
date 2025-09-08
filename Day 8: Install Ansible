@@ -1,23 +1,22 @@
-🔑 Day 7 – SSH Authentication
+⚙️ Day 8 – Install Ansible
 
 Question:
-Set up password-less SSH authentication between jump host and app servers.
+Install Ansible v4.7.0 on jump host and configure it to manage app servers.
 
 Answer:
 
-Generated SSH key pair:
+Installed Ansible using pip:
 
-ssh-keygen -t rsa
-
-
-Copied public key to app servers:
-
-ssh-copy-id -i ~/.ssh/id_rsa.pub tony@stapp01
+pip3 install ansible==4.7.0
 
 
-Verified login:
+Verified version:
 
-ssh tony@stapp01
+ansible --version
 
 
-✅ Achieved password-less login successfully.
+Configured /etc/ansible/hosts with app servers.
+
+Tested connectivity:
+
+ansible all -m ping
