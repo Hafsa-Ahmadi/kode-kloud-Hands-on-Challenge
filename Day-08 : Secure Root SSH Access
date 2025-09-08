@@ -1,0 +1,111 @@
+
+
+# 🔐 Password-less SSH Authentication – Stratos Datacenter
+
+## 📖 Overview
+
+As part of **xFusionCorp Industries** DevOps security hardening, the system administrators configured **password-less SSH authentication** from the `thor` user on the **Jump Host** to all application servers within the Stratos Datacenter.
+
+This ensures that scheduled automation scripts can connect securely to the app servers without requiring manual password entry, improving both **efficiency** and **security**.
+
+---
+
+## 🎯 Objective
+
+* Configure password-less SSH for:
+
+  * `thor@jumphost` → `tony@stapp01`
+  * `thor@jumphost` → `steve@stapp02`
+  * `thor@jumphost` → `banner@stapp03`
+* Validate that each connection works without a password prompt.
+* Confirm sudo privileges for each respective user.
+
+---
+
+## ⚙️ Implementation Steps
+
+### 1️⃣ Generate SSH Keys (on Jump Host as `thor`)
+
+```bash
+ssh thor@jump_host
+ssh-keygen -t rsa -b 4096
+```
+
+* Default location: `/home/thor/.ssh/id_rsa` (private), `/home/thor/.ssh/id_rsa.pub` (public).
+* No passphrase used (automation-safe).
+
+---
+
+### 2️⃣ Deploy Public Key to App Servers
+
+```bash
+ssh-copy-id -i ~/.ssh/id_rsa.pub tony@stapp01     # password: Ir0nM@n
+ssh-copy-id -i ~/.ssh/id_rsa.pub steve@stapp02    # password: Am3ric@
+ssh-copy-id -i ~/.ssh/id_rsa.pub banner@stapp03   # password: BigGr33n
+```
+
+* The first connection requires the sudo user’s password.
+* Once installed, subsequent logins are password-less.
+
+---
+
+### 3️⃣ Validate Password-less Access
+
+```bash
+ssh tony@stapp01
+ssh steve@stapp02
+ssh banner@stapp03
+```
+
+✅ Successful login without a password prompt.
+
+---
+
+### 4️⃣ Verify Sudo Permissions
+
+```bash
+ssh tony@stapp01 "sudo -l"
+ssh steve@stapp02 "sudo -l"
+ssh banner@stapp03 "sudo -l"
+```
+
+* Each sudo user has the expected elevated privileges.
+
+---
+
+## ✅ Outcome
+
+* Password-less SSH from `thor` to all app servers is successfully configured.
+* Secure and seamless connectivity is now established for automation scripts.
+* Compliance with xFusionCorp security policies achieved.
+
+---
+
+## 📊 Architecture Diagram
+
+```
+ Jump Host (thor)
+        │
+        ├──> stapp01 (tony)
+        ├──> stapp02 (steve)
+        └──> stapp03 (banner)
+```
+
+---
+
+## 🏷️ Tech Stack
+
+* **OpenSSH** (Key-based authentication)
+* **Linux System Administration**
+* **Sudo Policy Management**
+
+---
+
+## 📌 Notes
+
+* Always run `ssh-copy-id` from the **Jump Host as thor** (not from within app servers).
+* Keys should be generated once and reused across all servers.
+
+
+
+
