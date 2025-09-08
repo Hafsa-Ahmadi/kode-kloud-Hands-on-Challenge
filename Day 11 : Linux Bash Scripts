@@ -90,12 +90,4 @@ ssh-copy-id backup@nautilus_backup_server
 * Using **passwordless SSH** enables **non-interactive file transfer** 🌐
 * Always **test scripts locally** before scheduling cron jobs for production.
 
-```
-
----
-
-If you want, I can now **update the full Week 2 repository** to include **all README.md files (Days 7–14)** with **Day 11 backup script** included, emojis, and clean formatting, so it’s fully GitHub-ready.  
-
-Do you want me to do that?
-```
 
