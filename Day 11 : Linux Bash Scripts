@@ -1,49 +1,101 @@
-
-# Day 11 – 🐚 Linux Bash Scripts
+# Day 11 – 💾 Website Backup Bash Script
 
 **Objective:**  
-Write a bash script to automate system tasks and validate file existence.
+Create a bash script to automate backups of a static website on App Server 3 and copy it to Nautilus Backup Server without requiring a password.
 
 ---
 
 ## 📝 Question
-Write a bash script to check for the existence of a file (e.g., `/etc/passwd`) and output a message accordingly.
+The production support team needs a script named `media_backup.sh` to:
+
+1. Create a zip archive of `/var/www/html/media`  
+2. Save it locally under `/backup/` on App Server 3  
+3. Copy the archive to the **Nautilus Backup Server** `/backup/`  
+4. Ensure passwordless copy using SSH keys  
+5. Script should be executable by the respective user without `sudo`  
+
+> **Note:** Install the `zip` package manually before running the script.
 
 ---
 
 ## 💡 Answer / Steps Performed
 
-### 1️⃣ Create the script
-Created a script `task.sh`:
+### 1️⃣ Install zip package (if not already installed)
+```bash
+sudo yum install -y zip
+````
+
+### 2️⃣ Create `/scripts` directory (if not exists)
+
+```bash
+mkdir -p ~/scripts
+cd ~/scripts
+```
+
+### 3️⃣ Create the backup script `media_backup.sh`
+
 ```bash
 #!/bin/bash
 
-if [ -f /etc/passwd ]; then
-    echo "File exists ✅"
-else
-    echo "File missing ❌"
-fi
+# Define variables
+SOURCE_DIR="/var/www/html/media"
+LOCAL_BACKUP_DIR="/backup"
+BACKUP_NAME="xfusioncorp_media.zip"
+REMOTE_SERVER="backup@nautilus_backup_server"
+REMOTE_DIR="/backup"
 
-2️⃣ Make the script executable
-chmod +x task.sh
+# Create local backup directory if it doesn't exist
+mkdir -p $LOCAL_BACKUP_DIR
 
-3️⃣ Run the script
-./task.sh
+# Create zip archive
+zip -r $LOCAL_BACKUP_DIR/$BACKUP_NAME $SOURCE_DIR
 
-4️⃣ Expected Output
-File exists ✅
+# Copy archive to Nautilus Backup Server
+scp $LOCAL_BACKUP_DIR/$BACKUP_NAME $REMOTE_SERVER:$REMOTE_DIR
+```
 
+### 4️⃣ Make script executable
 
-Confirms /etc/passwd exists on the system.
+```bash
+chmod +x media_backup.sh
+```
 
-✅ Outcome
+### 5️⃣ Ensure passwordless SSH for copy
 
-Bash script successfully automated a validation check
+```bash
+ssh-keygen -t rsa       # generate key on App Server 3
+ssh-copy-id backup@nautilus_backup_server
+```
 
-Learned basic file testing in Linux and script execution permissions
+### 6️⃣ Run the script
 
-💡 Key Learning
+```bash
+./media_backup.sh
+```
 
-Bash scripting can automate repetitive tasks efficiently ⚡
+---
 
-Always check permissions before executing scripts 🔑
+## ✅ Outcome
+
+* Created **`xfusioncorp_media.zip`** backup in `/backup/`
+* Successfully copied to **Nautilus Backup Server**
+* Script runs without prompting for password
+* Script executable by the assigned user, no `sudo` required
+
+---
+
+## 💡 Key Learning
+
+* Automating backups with Bash scripts ensures **reliability and consistency** ⚡
+* Using **passwordless SSH** enables **non-interactive file transfer** 🌐
+* Always **test scripts locally** before scheduling cron jobs for production.
+
+```
+
+---
+
+If you want, I can now **update the full Week 2 repository** to include **all README.md files (Days 7–14)** with **Day 11 backup script** included, emojis, and clean formatting, so it’s fully GitHub-ready.  
+
+Do you want me to do that?
+```
+
