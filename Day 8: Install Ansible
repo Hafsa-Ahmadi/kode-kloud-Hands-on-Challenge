@@ -1,0 +1,23 @@
+🔑 Day 7 – SSH Authentication
+
+Question:
+Set up password-less SSH authentication between jump host and app servers.
+
+Answer:
+
+Generated SSH key pair:
+
+ssh-keygen -t rsa
+
+
+Copied public key to app servers:
+
+ssh-copy-id -i ~/.ssh/id_rsa.pub tony@stapp01
+
+
+Verified login:
+
+ssh tony@stapp01
+
+
+✅ Achieved password-less login successfully.
