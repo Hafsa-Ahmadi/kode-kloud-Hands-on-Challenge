@@ -1,0 +1,60 @@
+# Week 2 — Day 14: Nautilus Storage — Copying Developer Data 📦
+
+
+
+**How to create a compressed archive `john.tar.gz` from `/data/john` and copy it to `/home` on the storage server so developer John can access it?**
+
+---
+
+## ✅ Step-by-Step Solution 🛠️
+
+**1️⃣ Check the directory and available space 📂**
+
+```bash
+ssh natasha@172.16.238.15 "sudo ls -ld /data/john && sudo df -h /home"
+```
+
+* **Outcome:** Confirms `/data/john` exists and there is enough space in `/home`.
+
+**2️⃣ Create the compressed archive 🗜️**
+
+```bash
+ssh natasha@172.16.238.15 "sudo tar -czvf /tmp/john.tar.gz -C /data john"
+```
+
+* **Outcome:** Creates `john.tar.gz` temporarily in `/tmp`.
+
+**3️⃣ Copy the archive to `/home` 📁**
+
+```bash
+ssh natasha@172.16.238.15 "sudo cp /tmp/john.tar.gz /home/"
+```
+
+* **Outcome:** The archive is now in `/home` for John to access.
+
+**4️⃣ Set permissions and verify 🔑**
+
+```bash
+ssh natasha@172.16.238.15 "sudo chown john:john /home/john.tar.gz && sudo chmod 0644 /home/john.tar.gz && sha256sum /home/john.tar.gz"
+```
+
+* **Outcome:** Ensures John can access the archive and confirms file integrity.
+
+---
+
+## 📝 Additional Notes 📝
+
+* ✅ Commands can be run from the jumphost or directly on the storage server.
+* ⚠️ If `/data/john` is missing on the current host, switch to the storage server.
+* 🛡️ Use `sudo` if needed; otherwise, request an admin to run the commands.
+* 💡 Always check the checksum to ensure the archive is intact before sharing.
+
+---
+
+🎯 **Outcome Summary:**
+
+* `john.tar.gz` is safely copied to `/home` on the storage server.
+* Developer John has ownership and can access the archive.
+* Archive integrity verified with SHA256 checksum.
+
+
