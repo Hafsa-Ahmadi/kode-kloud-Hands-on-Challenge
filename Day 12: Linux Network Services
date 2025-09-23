@@ -1,0 +1,142 @@
+
+# 🚀 Week-3 Day-12 Task: Apache Service Troubleshooting  
+
+---
+
+## ❓ Question  
+Our monitoring tool has reported an issue in Stratos Datacenter.  
+One of our app servers has an issue, as its **Apache service is not reachable on port 6400**.  
+
+You are required to:  
+- 🛠 Use tools like `telnet`, `netstat`, etc. to **find and fix the issue**  
+- 🔒 Ensure Apache is reachable from the **jump host** without compromising security  
+- ❌ Do **not** alter existing `index.html` code  
+
+---
+
+## 📝 Steps & Fix  
+
+### 🔎 1. Check Apache Service  
+```bash
+sudo systemctl status httpd
+````
+
+✅ Apache was running.
+
+---
+
+### 📡 2. Verify Listening Port
+
+```bash
+sudo netstat -tulnp | grep 6400
+```
+
+Output:
+
+```
+tcp   0   0 0.0.0.0:6400   0.0.0.0:*   LISTEN   1256/httpd
+```
+
+✅ Apache is listening on **port 6400**.
+
+---
+
+### ⚙️ 3. Confirm Apache Config
+
+```bash
+sudo grep -i "Listen" /etc/httpd/conf/httpd.conf
+```
+
+Result:
+
+```
+Listen 0.0.0.0:6400
+```
+
+✅ Config is correct.
+
+---
+
+### 🛑 4. Test Connectivity from Jump Host
+
+```bash
+nc -zv stapp01 6400
+```
+
+Result:
+
+```
+No route to host
+```
+
+❌ Indicates **firewall blocking** the port.
+
+---
+
+### 🔐 5. Open Firewall for Port 6400
+
+```bash
+sudo iptables -I INPUT -p tcp --dport 6400 -j ACCEPT
+sudo service iptables save
+```
+
+✅ Port **6400** allowed.
+
+---
+
+### 🔄 6. Restart Apache (safe step)
+
+```bash
+sudo systemctl restart httpd
+```
+
+✅ Apache restarted successfully.
+
+---
+
+## 🎯 Outcome
+
+Now testing again from **jump host**:
+
+```bash
+curl -I http://stapp01:6400
+```
+
+Result:
+
+```http
+HTTP/1.1 403 Forbidden
+Date: Tue, 23 Sep 2025 16:46:11 GMT
+Server: Apache/2.4.37 (centos)
+```
+
+👉 **403 Forbidden** means Apache is **reachable** but denies directory listing.
+That’s expected and ✅ confirms connectivity.
+
+---
+
+## 💡 Hints & Points to Remember
+
+* 🔍 **403 Forbidden** ≠ failure → It only means no directory listing.
+* ⚡ Useful commands:
+
+  * `systemctl status httpd` → check Apache service
+  * `netstat -tulnp` → check listening ports
+  * `iptables` / `firewalld` → check firewall
+* 🚫 Do not edit `index.html` in these troubleshooting labs.
+* ✅ Always verify from **jump host** with `curl` or `telnet`.
+
+---
+
+## 🏆 Final Result
+
+* Apache is **running** on port **6400**
+* Firewall updated & rules saved
+* Jump host can **reach Apache successfully**
+* Task **completed successfully** 🎉
+
+---
+
+```
+
+---
