@@ -1,0 +1,146 @@
+# 🔐 Granting Executable Permissions to a Script
+
+## 📌 Problem Statement
+
+We have a bash script named **`xfusioncorp.sh`** located in `/tmp` on **App Server 2** of the Stratos Datacenter.
+
+Currently, the script does **not** have proper executable permissions.
+The task is:
+
+1. ✅ Grant executable permissions to `/tmp/xfusioncorp.sh`
+2. ✅ Ensure **all users** can execute it
+3. ✅ Verify the changes
+
+---
+
+## ❓ Question
+
+**How can we make the `/tmp/xfusioncorp.sh` script executable for all users in a secure way?**
+
+---
+
+## 💡 Answer
+
+### 🔹 Step 1: Connect to App Server 2
+
+From the jump host:
+
+```bash
+ssh steve@stapp02
+```
+
+---
+
+### 🔹 Step 2: Check Current Permissions
+
+```bash
+ls -l /tmp/xfusioncorp.sh
+```
+
+Example output:
+
+```
+---x--x--x 1 root root 40 Sep 24 06:36 /tmp/xfusioncorp.sh
+```
+
+👉 Here, only **execute (`x`)** is enabled for owner, group, and others.
+No read (`r`) or write (`w`) permission exists.
+
+---
+
+### 🔹 Step 3: Grant Executable Permission for All Users
+
+Run with `sudo` (since normal users can’t change root-owned files):
+
+```bash
+sudo chmod a+x /tmp/xfusioncorp.sh
+```
+
+* `chmod` → change file permissions
+* `a+x` → add execute permission for **all users** (owner, group, others)
+
+If you also want it to be **readable + executable** (recommended standard practice):
+
+```bash
+sudo chmod 755 /tmp/xfusioncorp.sh
+```
+
+This gives:
+
+* Owner → read, write, execute
+* Group → read, execute
+* Others → read, execute
+
+---
+
+### 🔹 Step 4: Verify Permissions
+
+```bash
+ls -l /tmp/xfusioncorp.sh
+```
+
+Expected output (if using `755`):
+
+```
+-rwxr-xr-x 1 root root 40 Sep 24 06:36 /tmp/xfusioncorp.sh
+```
+
+---
+
+### 🔹 Step 5: Execute the Script
+
+Any user can now run:
+
+```bash
+/tmp/xfusioncorp.sh
+```
+
+---
+
+## 📊 Before & After Permissions
+
+| State                 | Permission String | Meaning                                                             |
+| --------------------- | ----------------- | ------------------------------------------------------------------- |
+| ❌ Before (restricted) | `---x--x--x`      | Only execute allowed for all users. No read (`r`) or write (`w`).   |
+| ✅ After (corrected)   | `-rwxr-xr-x`      | Owner: full (`rwx`), Group: read & execute, Others: read & execute. |
+
+---
+
+## 🔎 Visual Diagram of Permissions
+
+```
+          File: /tmp/xfusioncorp.sh
+
+   ┌──────────┬───────────┬─────────────┐
+   │  Owner 👤 │  Group 👥  │   Others 🌎   │
+   ├──────────┼───────────┼─────────────┤
+   │  rwx     │   r-x     │    r-x      │
+   └──────────┴───────────┴─────────────┘
+
+Legend:
+ r = read    (view content)
+ w = write   (modify content)
+ x = execute (run the file as a program/script)
+```
+
+---
+
+## 🎯 Outcome
+
+* The script `/tmp/xfusioncorp.sh` is **executable by all users**.
+* System admins can now safely run and manage automated backup tasks.
+
+---
+
+## 📝 Points to Remember
+
+* Always use `sudo` when modifying files owned by `root`.
+* `a+x` → only adds **execute permission**.
+* `755` → standard permission for public executable scripts.
+* Verify changes with `ls -l` after every `chmod`.
+* To remove permissions if needed:
+
+  ```bash
+  sudo chmod a-x /tmp/xfusioncorp.sh
+  ```
+
