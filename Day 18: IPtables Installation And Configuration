@@ -1,0 +1,155 @@
+# 🚀 Apache Service Recovery – Stratos DC App Servers
+
+![Apache GIF](https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif)  
+
+## 📌 Problem
+One of the app servers in Stratos DC had **Apache down**.  
+**Goal:** Make Apache **up and running** on all app servers on **port 8084**.
+
+---
+
+## ✅ Quick Fix Steps
+
+### 1️⃣ Check Apache status
+```bash
+sudo systemctl status httpd
+````
+
+* Look for **failed** or **inactive**.
+
+### 2️⃣ Ensure Apache listens on port 8084
+
+```bash
+grep -i "Listen" /etc/httpd/conf/httpd.conf
+# Should output: Listen 8084
+```
+
+### 3️⃣ Check port conflicts
+
+```bash
+sudo ss -tulnp | grep 8084
+```
+
+* If another process (e.g., `sendmail`) uses it, stop it:
+
+```bash
+sudo systemctl stop sendmail
+sudo systemctl disable sendmail
+```
+
+### 4️⃣ Restart and enable Apache
+
+```bash
+sudo systemctl restart httpd
+sudo systemctl enable httpd
+```
+
+### 5️⃣ Verify Apache is running
+
+```bash
+sudo ss -tulnp | grep httpd
+curl -I http://<app-server>:8084
+```
+
+* Even `HTTP/1.1 403 Forbidden` ✅ means Apache is running.
+
+---
+
+## 🎯 Outcome
+
+* Apache **up and running** on all app servers
+* Listening on **port 8084**
+* Faulty host identified and fixed
+
+---
+
+## 💡 Tips
+
+* Always allow **SSH** before applying firewall/port rules.
+* Use `ss -tulnp` to see which process is using a port.
+* Restart and enable Apache after any config change.
+
+![Success GIF](https://media.giphy.com/media/111ebonMs90YLu/giphy.gif)
+
+````
+
+---
+
+And here’s the **iptables / Apache port 3002 security README**:
+
+```markdown
+# 🔒 Secure Apache Port 3002 – Nautilus App Servers
+
+![Firewall GIF](https://media.giphy.com/media/xUPGcguWZHRC2HyBRS/giphy.gif)
+
+## 📌 Problem
+Apache on **port 3002** is open to everyone.  
+**Goal:** Allow only the **LBR host** and block all other access, rules must **persist after reboot**.
+
+---
+
+## ✅ Steps
+
+### 1️⃣ Install iptables
+```bash
+sudo yum install iptables iptables-services -y
+sudo systemctl enable iptables
+sudo systemctl start iptables
+````
+
+### 2️⃣ Add firewall rules
+
+```bash
+sudo iptables -F
+sudo iptables -P OUTPUT ACCEPT
+sudo iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# Allow LBR host
+sudo iptables -A INPUT -p tcp -s <LBR_IP> --dport 3002 -j ACCEPT
+
+# Block everyone else
+sudo iptables -A INPUT -p tcp --dport 3002 -j DROP
+
+# Allow SSH & loopback
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -P INPUT DROP
+```
+
+### 3️⃣ Persist rules
+
+```bash
+sudo service iptables save
+sudo systemctl restart iptables
+```
+
+### 4️⃣ Verify
+
+```bash
+sudo iptables -L -n
+sudo ss -tulnp | grep 3002
+```
+
+---
+
+## 🎯 Outcome
+
+* **Port 3002** accessible **only from LBR host**
+* All other hosts **blocked**
+* Rules **persist after reboot**
+
+---
+
+## 💡 Tips
+
+* Always allow **SSH** before dropping incoming rules.
+* Test from both allowed and blocked hosts.
+* Use `iptables-save` to persist rules.
+
+![Firewall Success GIF](https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif)
+
+```
+
+---
+
+
