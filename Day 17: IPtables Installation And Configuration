@@ -1,0 +1,98 @@
+## 📌 Problem Statement
+The production support team of **xFusionCorp Industries** reported that the **Apache service** was unavailable on one of the application servers in Stratos DC.
+
+### Task Requirements:
+- Identify the faulty app host.  
+- Fix Apache service so it is **up and running** on **all app servers**.  
+- Ensure Apache is listening on **port 8084**.  
+- Serving actual web pages is not required — only service availability.
+
+---
+
+## 🛠️ Troubleshooting & Resolution Steps
+
+### 1. Check Apache service status on all app servers
+```bash
+ssh tony@stapp01
+ssh steve@stapp02
+ssh banner@stapp03
+sudo systemctl status httpd
+````
+
+### 2. Verify Apache port configuration
+
+```bash
+grep -i "Listen" /etc/httpd/conf/httpd.conf
+```
+
+✅ Ensure it has `Listen 8084`.
+
+### 3. Identify the faulty host
+
+* Example: On **stapp01**, Apache failed with:
+
+  ```
+  (98)Address already in use: no listening sockets available
+  ```
+* Root cause: Another service (`sendmail`) was using port 8084.
+
+### 4. Resolve port conflict
+
+```bash
+sudo systemctl stop sendmail
+sudo systemctl disable sendmail
+```
+
+### 5. Restart and enable Apache
+
+```bash
+sudo systemctl restart httpd
+sudo systemctl enable httpd
+```
+
+### 6. Verify Apache is listening on 8084
+
+```bash
+sudo ss -tulnp | grep httpd
+```
+
+Expected output:
+
+```
+tcp LISTEN 0 128 *:8084 *:* users:(("httpd",pid=...))
+```
+
+### 7. Confirm from jumphost
+
+```bash
+curl -I http://stapp01:8084
+curl -I http://stapp02:8084
+curl -I http://stapp03:8084
+```
+
+* All servers should respond (even `HTTP/1.1 403 Forbidden` is fine if no content is hosted).
+
+---
+
+## ✅ Outcome
+
+* Apache is **running and enabled** on all app servers.
+* All servers are listening on **port 8084**.
+* Faulty host identified and fixed.
+* Service availability issue resolved.
+
+---
+
+## 💡 Key Points to Remember
+
+* Use `sudo ss -tulnp | grep <port>` to check if a port is in use.
+* `(98)Address already in use` indicates a port conflict.
+* Apache’s `Listen` directive must match the intended port.
+* Always restart and enable Apache after configuration changes:
+
+```bash
+sudo systemctl restart httpd
+sudo systemctl enable httpd
+```
+
+
