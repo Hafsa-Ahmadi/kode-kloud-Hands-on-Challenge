@@ -1,0 +1,138 @@
+# 🚀 Nginx + SSL Setup on App Server 3  
+
+This repository documents how we prepared **App Server 3** of **xFusionCorp Industries** for application deployment.  
+The task came from the **System Admins Team**, and the requirements were completed step by step ✅  
+
+---
+
+## 📋 Task Requirements
+1. Install and configure **Nginx** 🕸️  
+2. Deploy the given **SSL certificate & key**  
+3. Create an **index.html** with message `Welcome!`  
+4. Test application using `curl` from the **jump host**  
+
+---
+
+## ⚙️ Step-by-Step Solution  
+
+### 1️⃣ Install Nginx  
+```bash
+# On App Server 3
+sudo yum install -y nginx      # (CentOS/RHEL)
+# OR
+sudo apt-get install -y nginx  # (Ubuntu/Debian)
+
+# Start & enable service
+sudo systemctl enable nginx
+sudo systemctl start nginx
+````
+
+👉 This installs and runs Nginx to serve web pages.
+
+---
+
+### 2️⃣ Setup SSL Certificate & Key 🔐
+
+The SSL cert and key were already present in `/etc/nginx/ssl/`.
+
+```bash
+# Verify files
+ls -l /etc/nginx/ssl/
+
+# Files should be:
+# nautilus.crt
+# nautilus.key
+```
+
+👉 These files are used to enable **HTTPS** support.
+
+---
+
+### 3️⃣ Configure Nginx for HTTPS ⚡
+
+Create/edit `/etc/nginx/conf.d/ssl.conf`:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name _;
+
+    ssl_certificate     /etc/nginx/ssl/nautilus.crt;
+    ssl_certificate_key /etc/nginx/ssl/nautilus.key;
+
+    root /usr/share/nginx/html;
+    index index.html;
+}
+```
+
+👉 This tells Nginx to serve traffic securely over **port 443**.
+
+---
+
+### 4️⃣ Create index.html 📝
+
+```bash
+echo "Welcome!" | sudo tee /usr/share/nginx/html/index.html
+```
+
+👉 This is the default landing page.
+
+---
+
+### 5️⃣ Validate Nginx Config ✅
+
+```bash
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+👉 `nginx -t` checks syntax, restart applies changes.
+
+---
+
+### 6️⃣ Test Application 🌐
+
+**On App Server 3 (local test):**
+
+```bash
+curl -k https://localhost/
+# Output: Welcome!
+```
+
+**From Jump Host:**
+
+```bash
+curl -Ik https://stapp03
+```
+
+Expected:
+
+```
+HTTP/1.1 200 OK
+```
+
+👉 This confirms SSL and web content are working correctly.
+
+---
+
+## 🏆 Outcome
+
+* Nginx installed & running
+* SSL certificate deployed
+* Index page with message served over HTTPS
+* Verified from both server and jump host
+
+✅ **Server ready for application deployment**
+
+---
+
+## 💡 Points to Remember
+
+* Always test config with `nginx -t` before restart
+* Keep SSL files in a secure directory (`/etc/nginx/ssl/`)
+* Use `curl -k` to ignore self-signed cert warnings during testing
+* Ensure firewall allows **port 443 (HTTPS)**
+
+---
+
+```
